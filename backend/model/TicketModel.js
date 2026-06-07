@@ -1,54 +1,65 @@
-const mongoose=require("mongoose")
+const mongoose = require("mongoose");
 
-const ticketSchema=mongoose.Schema({
-    user:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User",
-        required:true
+const ticketSchema = mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    technician:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User"
+    technician: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
-    location:{
-        type:String,
-        required:true
+    location: {
+      type: String,
+      required: true,
     },
-    issue:{
-        type:String,
-        required:true
+    issue: {
+      type: String,
+      required: true,
     },
-    preferredVisitDay:{
-        type:Date
+    preferredVisitDay: {
+      type: Date,
     },
-    preferredVisitHours:{
-        type:String,
-        enum:["Morning","Afternoon","Evening"]
+    preferredVisitHours: {
+      type: String,
+      enum: ["Morning", "Afternoon", "Evening"],
     },
-    category:{
-        type:String
+    category: {
+      type: String,
     },
-    ticketNumber:{
-        type:String,
-        required:true
+    ticketNumber: {
+      type: String,
+      required: true,
     },
-    status:{
-        type:String,
-        enum:["New","Assigned","Scheduled","In_Progress","On_Hold","Resolved","Cancelled"]
+    status: {
+      type: String,
+      enum: [
+        "New",
+        "Assigned",
+        "Scheduled",
+        "In_Progress",
+        "On_Hold",
+        "Resolved",
+        "Cancelled",
+      ],
     },
-    recommendation:{
-        type:String
+    recommendation: {
+      type: String,
     },
-    photo:[
-        {
-            photoUrl:{
-                type:String
-            },
-            photoPublicId:{
-                type:String
-            }
-        }
-    ]
-})
+    photo: [
+      {
+        photoUrl: {
+          type: String,
+        },
+        photoPublicId: {
+          type: String,
+        },
+      },
+    ],
+  },
+  { timestamps: true },
+);
 
-module.exports=mongoose.model("Ticket",ticketSchema);
+module.exports = mongoose.model("Ticket", ticketSchema);

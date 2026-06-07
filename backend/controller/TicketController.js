@@ -1,4 +1,5 @@
-const Ticket=require("../model/TicketModel")
+const Ticket = require("../model/TicketModel");
+const {sendEmail,adminAlert}=require("../utils/sendEmail")
 
 const createTicket = async (req, res) => {
   const { issue, location, preferredVisitHours, preferredVisitDay } = req.body;
@@ -32,9 +33,30 @@ const createTicket = async (req, res) => {
       preferredVisitHours,
       ticketNumber,
       photo,
-      status:"New"
+      status: "New",
     });
-    return res.status(201).json({message:"Issue received successfully"})
+
+    await sendEmail(
+      req.user.email,
+      "Complaint Received",
+      `
+            <h2>Complaint Received</h2>
+            <p>Your complaint has been received.</p>
+            <p>Ticket Number: ${ticket.ticketNumber}</p>
+        `,
+    );
+
+    await adminAlert(
+      req.user.email,
+      "Complaint Alert",
+      `
+            <h2>Complaint Registered</h2>
+            <p>${req.user.firstname} ${req.user.lastname} has sent a complaint, login in to the site to assign technician and address the issue.</p>
+            <p>Ticket Number: ${ticket.ticketNumber}</p>
+      `
+    )
+
+    return res.status(201).json({ message: "Issue received successfully" });
   } catch (error) {
     console.error(error.message || error);
     return res.status(500).json({ error: "Server side issues" });

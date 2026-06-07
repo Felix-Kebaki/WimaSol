@@ -12,8 +12,9 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())
 
-app.use("/api/auth",require("./router/UserRouter"))
+app.use("/api/customer",require("./router/CustomerRouter"))
 app.use("/api/ticket",require("./router/TicketRouter"))
+app.use("/api/employee",require("./router/EmployeeRouter"))
 
 app.listen(PORT,()=>{
     console.log(`Server listening to port ${PORT}...`)

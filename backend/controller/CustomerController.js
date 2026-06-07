@@ -1,16 +1,16 @@
-const User = require("../model/UserModel");
+const Customer = require("../model/CustomerModel");
 const bcrypt = require("bcryptjs");
 const generateTokenAndSetCookie = require("../utils/GenerateTokenAndSetCookie");
 const capitalize = require("../utils/CapitalizeFirstLetter");
 
 const createUser = async (req, res) => {
-  const { firstname, lastname, email, password,phoneNumber, role } = req.body;
+  const { firstname, lastname, email, password,phoneNumber } = req.body;
   try {
-    if (!firstname || !lastname || !email || !password || !role || !phoneNumber) {
+    if (!firstname || !lastname || !email || !password || !phoneNumber) {
       return res.status(400).json({ error: "Input all fields" });
     }
 
-    const userExists = await User.findOne({ email });
+    const userExists = await Customer.findOne({ email });
     if (userExists) {
       return res.status(409).json({ error: "User already exists" });
     }
@@ -18,21 +18,20 @@ const createUser = async (req, res) => {
     const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = new User({
+    const customer = new Customer({
       firstname: capitalize(firstname),
       lastname: capitalize(lastname),
       email,
       password: hashedPassword,
-      role,
       phoneNumber
     });
-    await user.save();
+    await customer.save();
 
-    generateTokenAndSetCookie(res, user._id);
+    generateTokenAndSetCookie(res, customer._id);
 
     return res.status(201).json({
       message: "User registered successfully",
-      userInfo: { ...user._doc, password: undefined },
+      userInfo: { ...customer._doc, password: undefined },
     });
   } catch (error) {
     console.error(error.message || error);
@@ -47,7 +46,7 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ error: "Input all fields" });
     }
 
-    const foundUser = await User.findOne({ email });
+    const foundUser = await Customer.findOne({ email });
     if (!foundUser) {
       return res
         .status(404)
@@ -61,7 +60,7 @@ const loginUser = async (req, res) => {
 
     generateTokenAndSetCookie(res, foundUser._id);
     return res.status(200).json({
-      message: "User logged in successfully",
+      message: "Logged in successfully",
       userInfo: { ...foundUser._doc, password: undefined },
     });
   } catch (error) {
@@ -72,7 +71,7 @@ const loginUser = async (req, res) => {
 
 const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
+    const customer = await Customer.findById(req.user._id);
     res.status(200).json({ message: "Authorized successfully" });
   } catch (error) {
     console.error(error.message || error);
@@ -90,23 +89,9 @@ const logoutUser = async (req, res) => {
   }
 };
 
-const getEmployees = async (req, res) => {
-  try {
-    const employees = await User.find({ role: "employee" });
-    if (!employees) {
-      return res.status(404).json({ error: "Unable to fetch employees" });
-    }
-
-    res.status(200).json(employees);
-  } catch (error) {
-    console.error(error.message || error);
-    return res.status(500).json({ error: "Server side issues" });
-  }
-};
-
 const getCustomers = async (req, res) => {
   try {
-    const customer = await User.find({ role: "customer" });
+    const customer = await Customer.find();
     if (!customer) {
       return res.status(404).json({ error: "Unable to fetch customers" });
     }
@@ -120,7 +105,7 @@ const getCustomers = async (req, res) => {
 
 const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await Customer.findById(req.user._id);
     if (!user) {
       return res.status(404).json({ error: "Unable to fetch profile" });
     }
@@ -134,7 +119,7 @@ const getProfile = async (req, res) => {
 const getOneUser = async (req, res) => {
   const { id } = req.params;
   try {
-    const user = await User.findById(id);
+    const user = await Customer.findById(id);
     if (!user) {
       return res.status(404).json({ error: "Unable to fetch user" });
     }
@@ -150,7 +135,6 @@ module.exports = {
   loginUser,
   getMe,
   logoutUser,
-  getEmployees,
   getCustomers,
   getProfile,
   getOneUser,
