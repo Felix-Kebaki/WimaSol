@@ -1,0 +1,54 @@
+const mongoose=require("mongoose")
+
+const ticketSchema=mongoose.Schema({
+    user:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
+        required:true
+    },
+    technician:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    },
+    location:{
+        type:String,
+        required:true
+    },
+    issue:{
+        type:String,
+        required:true
+    },
+    preferredVisitDay:{
+        type:Date
+    },
+    preferredVisitHours:{
+        type:String,
+        enum:["Morning","Afternoon","Evening"]
+    },
+    category:{
+        type:String
+    },
+    ticketNumber:{
+        type:String,
+        required:true
+    },
+    status:{
+        type:String,
+        enum:["New","Assigned","Scheduled","In_Progress","On_Hold","Resolved","Cancelled"]
+    },
+    recommendation:{
+        type:String
+    },
+    photo:[
+        {
+            photoUrl:{
+                type:String
+            },
+            photoPublicId:{
+                type:String
+            }
+        }
+    ]
+})
+
+module.exports=mongoose.model("Ticket",ticketSchema);

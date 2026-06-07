@@ -15,6 +15,13 @@ const userSchema = mongoose.Schema(
       unique: true,
       required: true,
     },
+    phoneNumber:{
+      type:String,
+      required:true,
+      trim:true,
+      unique:true,
+      match: [/^(\+254|0)[17]\d{8}$/, "Please enter a valid phone number"]
+    },
     password: {
       type: String,
       required: true,

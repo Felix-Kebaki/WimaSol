@@ -4,9 +4,9 @@ const generateTokenAndSetCookie = require("../utils/GenerateTokenAndSetCookie");
 const capitalize = require("../utils/CapitalizeFirstLetter");
 
 const createUser = async (req, res) => {
-  const { firstname, lastname, email, password, role } = req.body;
+  const { firstname, lastname, email, password,phoneNumber, role } = req.body;
   try {
-    if (!firstname || !lastname || !email || !password || !role) {
+    if (!firstname || !lastname || !email || !password || !role || !phoneNumber) {
       return res.status(400).json({ error: "Input all fields" });
     }
 
@@ -24,6 +24,7 @@ const createUser = async (req, res) => {
       email,
       password: hashedPassword,
       role,
+      phoneNumber
     });
     await user.save();
 
@@ -89,4 +90,68 @@ const logoutUser = async (req, res) => {
   }
 };
 
-module.exports = { createUser, loginUser, getMe, logoutUser };
+const getEmployees = async (req, res) => {
+  try {
+    const employees = await User.find({ role: "employee" });
+    if (!employees) {
+      return res.status(404).json({ error: "Unable to fetch employees" });
+    }
+
+    res.status(200).json(employees);
+  } catch (error) {
+    console.error(error.message || error);
+    return res.status(500).json({ error: "Server side issues" });
+  }
+};
+
+const getCustomers = async (req, res) => {
+  try {
+    const customer = await User.find({ role: "customer" });
+    if (!customer) {
+      return res.status(404).json({ error: "Unable to fetch customers" });
+    }
+
+    res.status(200).json(customer);
+  } catch (error) {
+    console.error(error.message || error);
+    return res.status(500).json({ error: "Server side issues" });
+  }
+};
+
+const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ error: "Unable to fetch profile" });
+    }
+    res.status(200).json({ ...user._doc, password: undefined });
+  } catch (error) {
+    console.error(error.message || error);
+    return res.status(500).json({ error: "Server side issues" });
+  }
+};
+
+const getOneUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: "Unable to fetch user" });
+    }
+    res.status(200).json({...user._doc,password:undefined})
+  } catch (error) {
+    console.error(error.message || error);
+    return res.status(500).json({ error: "Server side issues" });
+  }
+};
+
+module.exports = {
+  createUser,
+  loginUser,
+  getMe,
+  logoutUser,
+  getEmployees,
+  getCustomers,
+  getProfile,
+  getOneUser,
+};

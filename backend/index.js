@@ -13,6 +13,7 @@ app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())
 
 app.use("/api/auth",require("./router/UserRouter"))
+app.use("/api/ticket",require("./router/TicketRouter"))
 
 app.listen(PORT,()=>{
     console.log(`Server listening to port ${PORT}...`)
